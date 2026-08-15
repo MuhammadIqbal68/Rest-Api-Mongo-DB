@@ -1,0 +1,195 @@
+{
+  "info": {
+    "_postman_id": "a8f3e9b1-7c2d-4e5f-9a1b-3c4d5e6f7a8b",
+    "name": "Notes REST API - Node.js Express",
+    "description": "Postman Collection for testing full RESTful CRUD operations (GET, POST, PUT, DELETE) on the Node.js Express Notes API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "health"
+          ]
+        },
+        "description": "Check if API service is live."
+      }
+    },
+    {
+      "name": "1. GET All Notes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/notes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes"
+          ]
+        },
+        "description": "Retrieve all stored notes [200 OK]."
+      }
+    },
+    {
+      "name": "2. GET Single Note by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/notes/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes",
+            "1"
+          ]
+        },
+        "description": "Retrieve a specific note by ID [200 OK]."
+      }
+    },
+    {
+      "name": "3. GET Note - 404 Not Found",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/notes/99999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes",
+            "99999"
+          ]
+        },
+        "description": "Test requesting a non-existent note ID [404 Not Found]."
+      }
+    },
+    {
+      "name": "4. POST Create Note (Success)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Building APIs with Express.js\",\n  \"content\": \"Express simplifies routing, middleware, and request processing in Node.js.\",\n  \"category\": \"Backend\",\n  \"tags\": [\"express\", \"nodejs\", \"rest\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes"
+          ]
+        },
+        "description": "Create a new note with required title [201 Created]."
+      }
+    },
+    {
+      "name": "5. POST Create Note - 400 Bad Request (Validation Error)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\",\n  \"content\": \"This should fail because the title is empty.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes"
+          ]
+        },
+        "description": "Test input validation middleware by submitting an empty title [400 Bad Request]."
+      }
+    },
+    {
+      "name": "6. PUT Update Note",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Welcome Note\",\n  \"content\": \"This note content has been updated via a PUT request.\",\n  \"category\": \"General\",\n  \"tags\": [\"updated\", \"welcome\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notes/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes",
+            "1"
+          ]
+        },
+        "description": "Update an existing note by ID [200 OK]."
+      }
+    },
+    {
+      "name": "7. DELETE Note",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/notes/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notes",
+            "1"
+          ]
+        },
+        "description": "Remove a note by ID [200 OK]."
+      }
+    }
+  ]
+}

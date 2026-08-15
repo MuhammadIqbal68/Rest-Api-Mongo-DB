@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes Manager — Express REST API</title>
+  <meta name="description" content="A full-stack Notes Web Application built with Node.js, Express.js, input validation, and proper HTTP status codes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Notes Manager</h1>
+          
+        </div>
+      </div>
+
+      <div class="header-status">
+        <div class="server-badge" id="server-status">
+          <span class="live-dot"></span>
+          <span id="status-text">Server Running</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Two Column Main Layout -->
+    <div class="content-grid">
+
+      <!-- Left Column: Note Form & Notes List -->
+      <div class="left-column">
+        
+        <!-- Note Form Card -->
+        <section class="card form-card">
+          <div class="card-header">
+            <h2 id="form-heading">Create Note</h2>
+            <button type="button" id="cancel-edit-btn" class="btn btn-ghost hidden">Cancel</button>
+          </div>
+
+          <form id="note-form">
+            <input type="hidden" id="note-id" value="">
+
+            <div class="form-group">
+              <label for="note-title">Title <span class="required-star">*</span></label>
+              <input type="text" id="note-title" placeholder="e.g., Express Routing Architecture" required autocomplete="off">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="note-category">Category</label>
+                <select id="note-category">
+                  <option value="Work">Work</option>
+                  <option value="Personal">Personal</option>
+                  <option value="Ideas">Ideas</option>
+                  <option value="Study">Study</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="note-tags">Tags</label>
+                <input type="text" id="note-tags" placeholder="e.g., nodejs, express, rest">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="note-content">Note Content</label>
+              <textarea id="note-content" rows="3" placeholder="Write note details or documentation here..."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="submit-btn" class="btn btn-primary">Save Note</button>
+              <button type="button" id="test-error-btn" class="btn btn-secondary" title="Test 400 Bad Request input validation handler">Test 400 Validation</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Notes Filter & Search Bar -->
+        <section class="toolbar">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Search notes by title or content...">
+          </div>
+
+          <div class="select-wrapper">
+            <select id="category-filter">
+              <option value="">All Categories</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Ideas">Ideas</option>
+              <option value="Study">Study</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Notes Cards List -->
+        <section id="notes-list" class="notes-grid">
+          <!-- Dynamic cards injected by JS -->
+        </section>
+
+      </div>
+
+      <!-- Right Column: API Inspector Console & Route Summary -->
+      <div class="right-column">
+        
+        <!-- Embedded API Network Inspector -->
+        <section class="card inspector-card">
+          <div class="inspector-header">
+            <h3>API Network Inspector</h3>
+            <span class="inspector-badge">Real-time HTTP</span>
+          </div>
+
+          <div class="meta-bar" id="inspector-meta">
+            <span class="method-badge GET">GET</span>
+            <span class="url-text">/api/notes</span>
+            <span class="status-badge status-200">200 OK</span>
+          </div>
+
+          <div class="code-container">
+            <div class="code-toolbar">
+              <span>JSON Response Body</span>
+              <button type="button" class="copy-btn" id="copy-json-btn">Copy Payload</button>
+            </div>
+            <pre><code id="json-output">// Execute actions to inspect real-time JSON responses from Express API...</code></pre>
+          </div>
+        </section>
+
+        <!-- REST Endpoints Guide -->
+        <section class="card guide-card">
+          <h3>Supported REST API Endpoints</h3>
+          <ul class="route-list">
+            <li>
+              <span class="badge-method get">GET</span>
+              <code class="route-path">/api/notes</code>
+              <span class="route-desc">Fetch all notes</span>
+            </li>
+            <li>
+              <span class="badge-method get">GET</span>
+              <code class="route-path">/api/notes/:id</code>
+              <span class="route-desc">Fetch note by ID</span>
+            </li>
+            <li>
+              <span class="badge-method post">POST</span>
+              <code class="route-path">/api/notes</code>
+              <span class="route-desc">Create new note</span>
+            </li>
+            <li>
+              <span class="badge-method put">PUT</span>
+              <code class="route-path">/api/notes/:id</code>
+              <span class="route-desc">Update note</span>
+            </li>
+            <li>
+              <span class="badge-method del">DELETE</span>
+              <code class="route-path">/api/notes/:id</code>
+              <span class="route-desc">Delete note</span>
+            </li>
+          </ul>
+
+          
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

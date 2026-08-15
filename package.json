@@ -1,0 +1,28 @@
+{
+  "name": "express-notes-api",
+  "version": "1.0.0",
+  "description": "A RESTful Notes API built with Node.js, Express.js, modular routing, input validation, and proper HTTP status codes.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "npx nodemon src/server.js",
+    "test": "node test/api.test.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "rest-api",
+    "crud",
+    "notes-api",
+    "postman"
+  ],
+  "author": "Internship Developer",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
