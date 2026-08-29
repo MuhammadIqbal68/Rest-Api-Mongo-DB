@@ -65,6 +65,11 @@ async function checkHealth() {
   }
 }
 
+// Helper: get note ID (handles both `id` and `_id` from MongoDB)
+function getNoteId(note) {
+  return note.id || note._id;
+}
+
 // Fetch Notes (GET)
 async function fetchNotes() {
   const search = searchInput.value.trim();
@@ -182,14 +187,15 @@ async function startEditNote(id) {
   if (!res || !res.success) return;
 
   const note = res.data;
-  editingNoteId = note.id;
-  noteIdInput.value = note.id;
+  const noteId = getNoteId(note);
+  editingNoteId = noteId;
+  noteIdInput.value = noteId;
   titleInput.value = note.title;
   categoryInput.value = note.category || 'Work';
   tagsInput.value = (note.tags || []).join(', ');
   contentInput.value = note.content || '';
 
-  formHeading.textContent = `Edit Note #${note.id}`;
+  formHeading.textContent = `Edit Note`;
   submitBtn.textContent = 'Update Note';
   cancelEditBtn.classList.remove('hidden');
 
@@ -218,6 +224,7 @@ function renderNotes(notes) {
   }
 
   notesList.innerHTML = notes.map(note => {
+    const noteId = getNoteId(note);
     const formattedDate = new Date(note.createdAt).toLocaleDateString(undefined, {
       month: 'short', day: 'numeric'
     });
@@ -238,8 +245,8 @@ function renderNotes(notes) {
         <div class="note-card-footer">
           <span>${formattedDate}</span>
           <div class="actions-row">
-            <button class="btn btn-action-edit" onclick="startEditNote('${note.id}')">Edit</button>
-            <button class="btn btn-action-delete" onclick="deleteNote('${note.id}', '${escapeJsString(note.title)}')">Delete</button>
+            <button class="btn btn-action-edit" onclick="startEditNote('${noteId}')">Edit</button>
+            <button class="btn btn-action-delete" onclick="deleteNote('${noteId}', '${escapeJsString(note.title)}')">Delete</button>
           </div>
         </div>
       </div>

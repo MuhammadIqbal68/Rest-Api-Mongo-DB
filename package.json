@@ -1,7 +1,7 @@
 {
   "name": "express-notes-api",
-  "version": "1.0.0",
-  "description": "A RESTful Notes API built with Node.js, Express.js, modular routing, input validation, and proper HTTP status codes.",
+  "version": "2.0.0",
+  "description": "A RESTful Notes API built with Node.js, Express.js, MongoDB Atlas, and Mongoose. Features full CRUD operations, input validation, and persistent database storage.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -14,13 +14,18 @@
     "rest-api",
     "crud",
     "notes-api",
+    "mongodb",
+    "mongoose",
     "postman"
   ],
   "author": "Internship Developer",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.9.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

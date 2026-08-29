@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "a8f3e9b1-7c2d-4e5f-9a1b-3c4d5e6f7a8b",
-    "name": "Notes REST API - Node.js Express",
-    "description": "Postman Collection for testing full RESTful CRUD operations (GET, POST, PUT, DELETE) on the Node.js Express Notes API.",
+    "name": "Notes REST API — MongoDB + Mongoose",
+    "description": "Postman Collection for testing full RESTful CRUD operations (GET, POST, PUT, DELETE) on the Node.js Express Notes API backed by MongoDB Atlas via Mongoose. Note: IDs are now MongoDB ObjectIds (e.g., 64a1b2c3d4e5f6a7b8c9d0e1).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -10,6 +10,12 @@
       "key": "baseUrl",
       "value": "http://localhost:3000",
       "type": "string"
+    },
+    {
+      "key": "noteId",
+      "value": "<paste-a-valid-mongodb-objectid-here>",
+      "type": "string",
+      "description": "Replace with an actual note _id from your database after creating a note."
     }
   ],
   "item": [
@@ -28,7 +34,7 @@
             "health"
           ]
         },
-        "description": "Check if API service is live."
+        "description": "Check if API service and MongoDB connection are live."
       }
     },
     {
@@ -46,7 +52,7 @@
             "notes"
           ]
         },
-        "description": "Retrieve all stored notes [200 OK]."
+        "description": "Retrieve all stored notes from MongoDB [200 OK]."
       }
     },
     {
@@ -55,40 +61,55 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/notes/1",
+          "raw": "{{baseUrl}}/api/notes/{{noteId}}",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "notes",
-            "1"
+            "{{noteId}}"
           ]
         },
-        "description": "Retrieve a specific note by ID [200 OK]."
+        "description": "Retrieve a specific note by MongoDB ObjectId [200 OK]."
       }
     },
     {
-      "name": "3. GET Note - 404 Not Found",
+      "name": "3. GET Note — 404 Not Found",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/notes/99999",
+          "raw": "{{baseUrl}}/api/notes/64a000000000000000000000",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "notes",
-            "99999"
+            "64a000000000000000000000"
           ]
         },
-        "description": "Test requesting a non-existent note ID [404 Not Found]."
+        "description": "Test requesting a non-existent MongoDB ObjectId [404 Not Found]."
       }
     },
     {
       "name": "4. POST Create Note (Success)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.data && (jsonData.data.id || jsonData.data._id)) {",
+              "    pm.collectionVariables.set('noteId', jsonData.data.id || jsonData.data._id);",
+              "    console.log('Set noteId to: ' + (jsonData.data.id || jsonData.data._id));",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -100,7 +121,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Building APIs with Express.js\",\n  \"content\": \"Express simplifies routing, middleware, and request processing in Node.js.\",\n  \"category\": \"Backend\",\n  \"tags\": [\"express\", \"nodejs\", \"rest\"]\n}"
+          "raw": "{\n  \"title\": \"Building APIs with Express.js & MongoDB\",\n  \"content\": \"Express simplifies routing, middleware, and request processing. Mongoose provides elegant MongoDB schema-based modeling.\",\n  \"category\": \"Backend\",\n  \"tags\": [\"express\", \"nodejs\", \"mongodb\", \"mongoose\"]\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/notes",
@@ -112,11 +133,11 @@
             "notes"
           ]
         },
-        "description": "Create a new note with required title [201 Created]."
+        "description": "Create a new note and automatically save the returned ID to {{noteId}} [201 Created]."
       }
     },
     {
-      "name": "5. POST Create Note - 400 Bad Request (Validation Error)",
+      "name": "5. POST Create Note — 400 Bad Request (Validation Error)",
       "request": {
         "method": "POST",
         "header": [
@@ -156,20 +177,20 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Updated Welcome Note\",\n  \"content\": \"This note content has been updated via a PUT request.\",\n  \"category\": \"General\",\n  \"tags\": [\"updated\", \"welcome\"]\n}"
+          "raw": "{\n  \"title\": \"Updated Note Title via Mongoose\",\n  \"content\": \"This note content has been updated via a PUT request to MongoDB.\",\n  \"category\": \"General\",\n  \"tags\": [\"updated\", \"mongoose\"]\n}"
         },
         "url": {
-          "raw": "{{baseUrl}}/api/notes/1",
+          "raw": "{{baseUrl}}/api/notes/{{noteId}}",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "notes",
-            "1"
+            "{{noteId}}"
           ]
         },
-        "description": "Update an existing note by ID [200 OK]."
+        "description": "Update an existing note by MongoDB ObjectId [200 OK]."
       }
     },
     {
@@ -178,17 +199,17 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/notes/1",
+          "raw": "{{baseUrl}}/api/notes/{{noteId}}",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "notes",
-            "1"
+            "{{noteId}}"
           ]
         },
-        "description": "Remove a note by ID [200 OK]."
+        "description": "Remove a note by MongoDB ObjectId [200 OK]."
       }
     }
   ]

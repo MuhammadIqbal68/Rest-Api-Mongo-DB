@@ -2,9 +2,12 @@
  * Main Express Application Server Entry Point
  */
 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const connectDB = require('./config/db');
 const noteRoutes = require('./routes/noteRoutes');
 const { notFoundHandler, globalErrorHandler } = require('./middleware/errorHandler');
 
@@ -33,7 +36,8 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'UP',
     timestamp: new Date().toISOString(),
-    service: 'Notes REST API'
+    service: 'Notes REST API',
+    database: 'MongoDB Atlas'
   });
 });
 
@@ -46,14 +50,17 @@ app.use(notFoundHandler);
 // Global Error Handler
 app.use(globalErrorHandler);
 
-// Start server if run directly
+// Connect to MongoDB and start server if run directly
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`=================================================`);
-    console.log(`🚀 Notes REST API running on http://localhost:${PORT}`);
-    console.log(`📝 Interactive Dashboard: http://localhost:${PORT}`);
-    console.log(`🔌 Health Check: http://localhost:${PORT}/api/health`);
-    console.log(`=================================================`);
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`=================================================`);
+      console.log(`🚀 Notes REST API running on http://localhost:${PORT}`);
+      console.log(`📝 Interactive Dashboard: http://localhost:${PORT}`);
+      console.log(`🔌 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`💾 Database: MongoDB Atlas (Mongoose)`);
+      console.log(`=================================================`);
+    });
   });
 }
 
