@@ -1,19 +1,23 @@
 /**
  * Notes Controller
  * Encapsulates CRUD business logic using Mongoose for MongoDB operations.
+ * All operations are scoped to the authenticated user (req.user._id).
  */
 
 const Note = require('../models/Note');
 
 /**
  * @route   GET /api/notes
- * @desc    Retrieve all notes (supports optional ?search= and ?category= filters)
- * @access  Public
+ * @desc    Retrieve all notes belonging to the authenticated user
+ *          Supports optional ?search= and ?category= filters
+ * @access  Protected
  */
 const getAllNotes = async (req, res, next) => {
   try {
     const { search, category } = req.query;
-    const filter = {};
+
+    // Always filter by the requesting user's ID
+    const filter = { owner: req.user._id };
 
     if (category) {
       filter.category = { $regex: new RegExp(`^${category}$`, 'i') };
@@ -41,19 +45,19 @@ const getAllNotes = async (req, res, next) => {
 
 /**
  * @route   GET /api/notes/:id
- * @desc    Retrieve a single note by ID
- * @access  Public
+ * @desc    Retrieve a single note by ID (must belong to authenticated user)
+ * @access  Protected
  */
 const getNoteById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const note = await Note.findById(id);
+    const note = await Note.findOne({ _id: id, owner: req.user._id });
 
     if (!note) {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        error: "Not Found",
+        error: 'Not Found',
         message: `Note with ID '${id}' was not found.`
       });
     }
@@ -70,8 +74,8 @@ const getNoteById = async (req, res, next) => {
 
 /**
  * @route   POST /api/notes
- * @desc    Create a new note
- * @access  Public
+ * @desc    Create a new note for the authenticated user
+ * @access  Protected
  */
 const createNote = async (req, res, next) => {
   try {
@@ -81,13 +85,14 @@ const createNote = async (req, res, next) => {
       title,
       content: content || '',
       category: category && category.trim() ? category.trim() : 'General',
-      tags: Array.isArray(tags) ? tags.map(t => String(t).trim()).filter(Boolean) : []
+      tags: Array.isArray(tags) ? tags.map(t => String(t).trim()).filter(Boolean) : [],
+      owner: req.user._id  // Assign note to the authenticated user
     });
 
     return res.status(201).json({
       success: true,
       statusCode: 201,
-      message: "Note created successfully.",
+      message: 'Note created successfully.',
       data: newNote
     });
   } catch (error) {
@@ -97,8 +102,8 @@ const createNote = async (req, res, next) => {
 
 /**
  * @route   PUT /api/notes/:id
- * @desc    Update an existing note by ID
- * @access  Public
+ * @desc    Update an existing note by ID (must belong to authenticated user)
+ * @access  Protected
  */
 const updateNote = async (req, res, next) => {
   try {
@@ -111,8 +116,9 @@ const updateNote = async (req, res, next) => {
     if (category !== undefined) updateFields.category = category.trim() || 'General';
     if (tags !== undefined) updateFields.tags = Array.isArray(tags) ? tags.map(t => String(t).trim()).filter(Boolean) : [];
 
-    const updatedNote = await Note.findByIdAndUpdate(
-      id,
+    // Ensure the note belongs to the requesting user
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: id, owner: req.user._id },
       updateFields,
       { returnDocument: 'after', runValidators: true }
     );
@@ -121,7 +127,7 @@ const updateNote = async (req, res, next) => {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        error: "Not Found",
+        error: 'Not Found',
         message: `Note with ID '${id}' was not found for update.`
       });
     }
@@ -129,7 +135,7 @@ const updateNote = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       statusCode: 200,
-      message: "Note updated successfully.",
+      message: 'Note updated successfully.',
       data: updatedNote
     });
   } catch (error) {
@@ -139,20 +145,21 @@ const updateNote = async (req, res, next) => {
 
 /**
  * @route   DELETE /api/notes/:id
- * @desc    Remove a note by ID
- * @access  Public
+ * @desc    Remove a note by ID (must belong to authenticated user)
+ * @access  Protected
  */
 const deleteNote = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deleted = await Note.findByIdAndDelete(id);
+    // Ensure the note belongs to the requesting user
+    const deleted = await Note.findOneAndDelete({ _id: id, owner: req.user._id });
 
     if (!deleted) {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        error: "Not Found",
+        error: 'Not Found',
         message: `Note with ID '${id}' was not found for deletion.`
       });
     }

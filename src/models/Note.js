@@ -1,6 +1,7 @@
 /**
  * Mongoose Schema & Model for Notes
  * Replaces the in-memory data store with persistent MongoDB storage.
+ * Each note is owned by a registered User (via the `owner` field).
  */
 
 const mongoose = require('mongoose');
@@ -26,6 +27,11 @@ const noteSchema = new mongoose.Schema(
     tags: {
       type: [String],
       default: []
+    },
+    owner: {
+      type: require('mongoose').Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Note must belong to a user.']
     }
   },
   {

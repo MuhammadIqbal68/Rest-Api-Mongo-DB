@@ -9,6 +9,7 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 const noteRoutes = require('./routes/noteRoutes');
+const authRoutes = require('./routes/authRoutes');
 const { notFoundHandler, globalErrorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -41,6 +42,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Auth Routes (register, login, me)
+app.use('/api/auth', authRoutes);
+
 // API Routes
 app.use('/api/notes', noteRoutes);
 
@@ -58,6 +62,7 @@ if (require.main === module) {
       console.log(`🚀 Notes REST API running on http://localhost:${PORT}`);
       console.log(`📝 Interactive Dashboard: http://localhost:${PORT}`);
       console.log(`🔌 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`🔐 Auth Endpoints: http://localhost:${PORT}/api/auth`);
       console.log(`💾 Database: MongoDB Atlas (Mongoose)`);
       console.log(`=================================================`);
     });
